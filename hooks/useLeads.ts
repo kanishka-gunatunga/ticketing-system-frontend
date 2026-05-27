@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useCurrentUser } from '../utils/auth';
 
-const API_URL = 'http://localhost:8081/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081/api';
 
 export interface Ticket {
     id: number;

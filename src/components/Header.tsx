@@ -55,19 +55,19 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
                 </div>
 
                 {/* Navigation Menu */}
-                <div className="flex items-center bg-gray-100/80 rounded-xl p-1 border border-gray-250/50 text-sm font-medium">
-                    {/*<button*/}
-                    {/*    onClick={() => router.push("/leads")}*/}
-                    {/*    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${*/}
-                    {/*        pathname === "/leads"*/}
-                    {/*            ? "bg-white text-red-600 shadow-sm border border-gray-200/30 font-semibold"*/}
-                    {/*            : "text-gray-600 hover:text-gray-900 cursor-pointer"*/}
-                    {/*    }`}*/}
-                    {/*>*/}
-                    {/*    <Ticket className="w-4 h-4" />*/}
-                    {/*    Dashboard*/}
-                    {/*</button>*/}
-                    {user.role === "Admin" && (
+                {/* <div className="flex items-center bg-gray-100/80 rounded-xl p-1 border border-gray-250/50 text-sm font-medium"> */}
+                {/*<button*/}
+                {/*    onClick={() => router.push("/leads")}*/}
+                {/*    className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${*/}
+                {/*        pathname === "/leads"*/}
+                {/*            ? "bg-white text-red-600 shadow-sm border border-gray-200/30 font-semibold"*/}
+                {/*            : "text-gray-600 hover:text-gray-900 cursor-pointer"*/}
+                {/*    }`}*/}
+                {/*>*/}
+                {/*    <Ticket className="w-4 h-4" />*/}
+                {/*    Dashboard*/}
+                {/*</button>*/}
+                {/* {user.role === "Admin" && (
                         <button
                             onClick={() => router.push("/users")}
                             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
@@ -80,7 +80,7 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
                             User Management
                         </button>
                     )}
-                </div>
+                </div> */}
 
                 {/* User Settings & Logout */}
                 <div className="flex items-center gap-4">

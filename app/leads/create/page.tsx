@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import RedSpinner from "@/components/RedSpinner";
 import Toast from "@/components/Toast";
+import SideMenu from "@/components/SideMenu";
 import { useCurrentUser } from "@/utils/auth";
 import { useToast } from "@/hooks/useToast";
 import { LeadsService } from "@/hooks/useLeads";
@@ -342,6 +343,7 @@ export default function CreateLead() {
             />
 
             <Header title="Support Sphere Portal" />
+            <SideMenu />
 
             <main className="pt-28 px-8 max-w-[1440px] mx-auto flex flex-col gap-6">
                 

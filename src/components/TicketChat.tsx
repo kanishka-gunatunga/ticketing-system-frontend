@@ -5,7 +5,7 @@ import axios from "axios";
 import { Send, MessageSquare, Lock, Loader2, Paperclip, X, ImageIcon } from "lucide-react";
 import { uploadToBlob } from "@/utils/uploadBlob";
 
-const API_BASE = "http://localhost:8081/api";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api";
 const POLL_INTERVAL_MS = 3000;
 
 const ACTIVE_STATUSES = ["Assigned L1", "Assigned L2", "Escalated"];
@@ -37,7 +37,8 @@ interface TicketChatProps {
 /** Safely parses a date string and falls back gracefully */
 function safeDate(dateStr: string | null | undefined): Date | null {
     if (!dateStr) return null;
-    const d = new Date(dateStr);
+    const normalized = typeof dateStr === "string" ? dateStr.replace(" ", "T") : dateStr;
+    const d = new Date(normalized);
     return isNaN(d.getTime()) ? null : d;
 }
 
@@ -62,13 +63,13 @@ function formatDate(dateStr: string): string {
 function groupByDate(messages: ChatMessage[]): { date: string; items: ChatMessage[] }[] {
     const groups: Record<string, ChatMessage[]> = {};
     for (const msg of messages) {
-        const d = safeDate(msg.created_at);
+        const d = safeDate(msg.created_at || (msg as any).createdAt);
         const key = d ? d.toDateString() : "unknown";
         if (!groups[key]) groups[key] = [];
         groups[key].push(msg);
     }
     return Object.entries(groups).map(([, items]) => ({
-        date: formatDate(items[0].created_at),
+        date: formatDate(items[0].created_at || (items[0] as any).createdAt),
         items,
     }));
 }
@@ -112,6 +113,8 @@ export default function TicketChat({
         }
     }, [ticketId]);
 
+    const hasScrolledInitial = useRef(false);
+
     useEffect(() => {
         if (!isActive) {
             setIsLoadingInitial(false);
@@ -125,7 +128,10 @@ export default function TicketChat({
     }, [fetchMessages, isActive]);
 
     useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (messages.length > 0 && !hasScrolledInitial.current) {
+            bottomRef.current?.scrollIntoView({ behavior: "auto" });
+            hasScrolledInitial.current = true;
+        }
     }, [messages]);
 
     // Handle image selection for chat
@@ -162,6 +168,7 @@ export default function TicketChat({
             setInputText("");
             clearPendingImage();
             await fetchMessages();
+            bottomRef.current?.scrollIntoView({ behavior: "smooth" });
             inputRef.current?.focus();
         } catch (err) {
             console.error("Failed to send message:", err);
@@ -302,7 +309,7 @@ export default function TicketChat({
                                             )}
 
                                             <span className="ticket-chat-time">
-                                                {formatTime(msg.created_at)}
+                                                {formatTime(msg.created_at || (msg as any).createdAt)}
                                             </span>
                                         </div>
                                     </div>

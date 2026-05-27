@@ -6,20 +6,21 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import axios from "axios";
-import { ArrowLeft, Clock, User, Mail, Phone, Briefcase, Globe, Info, PlusCircle, Paperclip } from "lucide-react";
+import { ArrowLeft, Clock, User, Mail, Phone, Briefcase, Globe, Info, PlusCircle, Paperclip, CheckCircle2, UserPlus, ArrowUpRight, FileText, MessageSquare } from "lucide-react";
 import { message } from "antd";
 
 import Header from "@/components/Header";
 import FlowBar, { ComplainStatus } from "@/components/FlowBar";
 import TicketInfoRow from "@/components/TicketInfoRow";
-import TicketDetailsTab from "@/components/TicketDetailsTab";
 import Modal from "@/components/Modal";
 import RedSpinner from "@/components/RedSpinner";
 import Toast from "@/components/Toast";
 import { useCurrentUser } from "@/utils/auth";
 import { useToast } from "@/hooks/useToast";
 import { LeadsService, Ticket } from "@/hooks/useLeads";
-import TicketChat from "@/components/TicketChat";
+import SideMenu from "@/components/SideMenu";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api";
 
 export default function TicketDetailsPage() {
     const params = useParams();
@@ -73,7 +74,7 @@ export default function TicketDetailsPage() {
     // Fetch Agents for manual Admin assignment
     useEffect(() => {
         if (user && user.role === "Admin") {
-            axios.get("http://localhost:8081/api/users")
+            axios.get(`${API_URL}/users`)
                 .then(res => {
                     const filtered = res.data.filter((u: any) => u.role === "AgentL1" || u.role === "AgentL2");
                     setAgents(filtered);
@@ -146,7 +147,7 @@ export default function TicketDetailsPage() {
         if (!activityText.trim() || !ticket || !user) return;
         setIsSubmittingAction(true);
         try {
-            await axios.post(`http://localhost:8081/api/tickets/${ticket.id}/followups`, {
+            await axios.post(`${API_URL}/tickets/${ticket.id}/followups`, {
                 activity: activityText,
                 activity_date: new Date().toISOString().split('T')[0],
                 userId: user.id
@@ -167,7 +168,7 @@ export default function TicketDetailsPage() {
         if (!reminderTitle.trim() || !reminderDate || !ticket || !user) return;
         setIsSubmittingAction(true);
         try {
-            await axios.post(`http://localhost:8081/api/tickets/${ticket.id}/reminders`, {
+            await axios.post(`${API_URL}/tickets/${ticket.id}/reminders`, {
                 task_title: reminderTitle,
                 task_date: reminderDate,
                 note: reminderNote,
@@ -193,11 +194,9 @@ export default function TicketDetailsPage() {
             case "New":
                 return "New";
             case "Assigned L1":
-                return "In Review";
             case "Escalated":
-                return "Processing";
             case "Assigned L2":
-                return "Approval";
+                return "In Review";
             case "Resolved":
             case "Closed":
                 return "Completed";
@@ -322,6 +321,9 @@ export default function TicketDetailsPage() {
                 onClose={hideToast}
             />
 
+            {/* Side navigation menu with chat link */}
+            <SideMenu ticketId={ticketId} />
+
             <main className="pt-30 px-16 ml-16 max-w-[1440px] mx-auto flex flex-col gap-6">
 
                 {/* Header Panel */}
@@ -337,17 +339,17 @@ export default function TicketDetailsPage() {
                     </button>
 
                     {ticket.assignee && (
-                        <div className="px-4 py-1.5 rounded-full bg-white/60 text-xs font-semibold text-gray-700 border border-[#E0E0E0]">
+                        <div className="px-4 py-1.5 rounded-full bg-white/60 text-xs font-semibold text-gray-700 shadow-sm">
                             Assigned Agent: <span className="text-[#DB2727]">{ticket.assignee.name}</span>
                         </div>
                     )}
                 </div>
 
                 {/* Ticket Details Board */}
-                <section className="relative bg-[#FFFFFF4D] mb-5 bg-opacity-30 rounded-[45px] border border-[#E0E0E0] px-9 py-10 flex flex-col gap-8 shadow-sm">
+                <section className="relative bg-[#FFFFFF4D] mb-5 bg-opacity-30 rounded-[45px] px-9 py-10 flex flex-col gap-8 shadow-sm">
 
                     {/* Top Status & Controls Row */}
-                    <div className="flex flex-col xl:flex-row w-full justify-between items-start xl:items-center gap-6 pb-6 border-b border-gray-200/50">
+                    <div className="flex flex-col xl:flex-row w-full justify-between items-start xl:items-center gap-6 pb-6">
 
                         {/* Meta Tags Column */}
                         <div className="flex flex-wrap items-center gap-3">
@@ -474,63 +476,98 @@ export default function TicketDetailsPage() {
                             </div>
                         </div>
 
-                        {/* Right Side: Followup & Reminders Tab Log */}
+                        {/* Right Side: System Journey Timeline */}
                         <div className="w-full lg:w-3/5 flex flex-col min-h-[450px]">
-                            <h3 className="mb-4 font-bold text-[18px] text-gray-800 border-b border-gray-200/50 pb-2">
-                                Activity Logs & Tasks
+                            <h3 className="mb-4 font-bold text-[18px] text-gray-800 pb-2 flex items-center gap-2">
+                                <Clock className="w-5 h-5 text-gray-500" /> System Journey Timeline
                             </h3>
 
-                            <TicketDetailsTab
-                                status={flowStatus}
-                                onOpenActivity={() => setActivityModalOpen(true)}
-                                onOpenReminder={() => setReminderModalOpen(true)}
-                                followups={ticket.followups || []}
-                                reminders={ticket.reminders || []}
-                            />
+                            <div className="space-y-6 max-h-[420px] overflow-y-auto pr-2 no-scrollbar pl-2 mt-4">
+                                {ticket.activities && ticket.activities.length > 0 ? (
+                                    ticket.activities.map((act, index) => {
+                                        const lower = act.details.toLowerCase();
+                                        const isCreation = lower.includes("created") || lower.includes("initiated") || lower.includes("opened");
+                                        const isAssignment = lower.includes("assigned") || lower.includes("handover") || lower.includes("claimed");
+                                        const isResolution = lower.includes("resolved") || lower.includes("closed") || lower.includes("completed");
+                                        const isEscalation = lower.includes("escalated") || lower.includes("escalation");
+                                        
+                                        // Dynamic color schemes and icons
+                                        let themeColor = "text-[#DB2727] bg-red-50";
+                                        let bulletColor = "bg-[#DB2727]";
+                                        let timelineIcon = <MessageSquare className="w-4 h-4" />;
+                                        
+                                        if (isCreation) {
+                                            themeColor = "text-[#DB2727] bg-red-50";
+                                            bulletColor = "bg-[#DB2727]";
+                                            timelineIcon = <FileText className="w-4 h-4" />;
+                                        } else if (isResolution) {
+                                            themeColor = "text-[#10B981] bg-emerald-50";
+                                            bulletColor = "bg-[#10B981]";
+                                            timelineIcon = <CheckCircle2 className="w-4 h-4" />;
+                                        } else if (isAssignment) {
+                                            themeColor = "text-[#F59E0B] bg-amber-50";
+                                            bulletColor = "bg-[#F59E0B]";
+                                            timelineIcon = <UserPlus className="w-4 h-4" />;
+                                        } else if (isEscalation) {
+                                            themeColor = "text-purple-600 bg-purple-50";
+                                            bulletColor = "bg-purple-600";
+                                            timelineIcon = <ArrowUpRight className="w-4 h-4" />;
+                                        }
+
+                                        // Safe date parsing to avoid browser-specific 'Invalid Date' output
+                                        const rawDate = act.created_at || (act as any).createdAt;
+                                        const dateNormalized = typeof rawDate === "string" ? rawDate.replace(" ", "T") : rawDate;
+                                        const actDate = new Date(dateNormalized);
+                                        const formattedDate = isNaN(actDate.getTime()) 
+                                            ? "—" 
+                                            : `${actDate.toLocaleDateString()} ${actDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+                                        return (
+                                            <div key={act.id} className="flex gap-4 relative items-start group">
+                                                {index < ticket.activities!.length - 1 && (
+                                                    <span className="absolute left-[15px] top-8 bottom-0 w-0.5 bg-gradient-to-b from-gray-200 to-gray-100"></span>
+                                                )}
+                                                
+                                                {/* Bullet Icon Container */}
+                                                <div className={`w-8 h-8 rounded-full flex items-center justify-center z-10 flex-shrink-0 shadow-sm transition-all duration-300 group-hover:scale-110 ${themeColor}`}>
+                                                    {timelineIcon}
+                                                </div>
+
+                                                {/* Timeline Details Card */}
+                                                <div className="flex-1 bg-white/95 backdrop-blur-sm px-5 py-4 rounded-[24px] shadow-[0_4px_18px_-4px_rgba(0,0,0,0.04)] hover:shadow-[0_6px_24px_-4px_rgba(0,0,0,0.08)] transition-all duration-200">
+                                                    <p className="font-bold text-gray-800 text-[14px] leading-relaxed">
+                                                        {act.details}
+                                                    </p>
+                                                    
+                                                    {/* Meta Footer Row */}
+                                                    <div className="flex flex-wrap items-center gap-2 mt-3 pt-2">
+                                                        <span className="text-[10px] text-gray-400 font-medium flex items-center gap-1">
+                                                            <Clock className="w-3 h-3 text-gray-300" />
+                                                            {formattedDate}
+                                                        </span>
+                                                        
+                                                        {act.user && (
+                                                            <span className="ml-auto inline-flex items-center gap-1 px-2.5 py-0.5 bg-gray-50 text-gray-600 rounded-full text-[10px] font-bold">
+                                                                <span className={`w-1.5 h-1.5 rounded-full ${bulletColor} inline-block`} />
+                                                                {act.user.name} ({act.user.role})
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center py-10 px-4 bg-white/40 rounded-[30px] shadow-sm">
+                                        <Clock className="w-8 h-8 text-gray-300 mb-2" />
+                                        <p className="text-sm text-gray-500 font-medium italic">No system event logs recorded for this ticket.</p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </section>
 
-                {/* Backwards History Log (System Events Timeline) */}
-                {/* <section className="relative bg-[#FFFFFF4D] bg-opacity-30 rounded-[45px] border border-[#E0E0E0] px-9 py-8 shadow-sm">
-                    <h3 className="mb-6 font-bold text-[18px] text-gray-800 border-b border-gray-200/50 pb-2 flex items-center gap-2">
-                        <Clock className="w-5 h-5 text-gray-500" /> System Journey Timeline
-                    </h3>
-
-                    <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 no-scrollbar pl-4">
-                        {ticket.activities && ticket.activities.length > 0 ? (
-                            ticket.activities.map((act, index) => (
-                                <div key={act.id} className="flex gap-4 relative">
-                                    {index < ticket.activities!.length - 1 && (
-                                        <span className="absolute left-[13px] top-6 bottom-0 w-0.5 bg-gray-250"></span>
-                                    )}
-                                    <div className="w-7 h-7 rounded-full bg-white text-gray-400 border border-gray-200 flex items-center justify-center z-10 flex-shrink-0">
-                                        <Clock className="w-4 h-4" />
-                                    </div>
-                                    <div className="text-sm bg-white/80 px-4 py-2.5 rounded-2xl border border-gray-150 flex-1">
-                                        <p className="font-semibold text-gray-800 leading-tight">{act.details}</p>
-                                        <span className="text-[10px] text-gray-400 font-medium mt-1 block">
-                                            {new Date(act.created_at).toLocaleString()} {act.user ? `by ${act.user.name} (${act.user.role})` : ''}
-                                        </span>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-sm text-gray-400 italic">No system event logs recorded for this ticket.</p>
-                        )}
-                    </div>
-                </section> */}
-
-                {/* Ticket Chat Section */}
-                {ticket && user && (
-                    <TicketChat
-                        ticketId={ticket.id}
-                        ticketStatus={ticket.status}
-                        currentUser={{ id: user.id, name: user.name, role: user.role }}
-                        assignedToId={ticket.assigned_to}
-                        companyUserId={ticket.company_user_id}
-                    />
-                )}
             </main>
 
             {/* --- Modals and Dialog Blocks --- */}

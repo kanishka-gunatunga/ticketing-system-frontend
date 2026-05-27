@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { logInUser } from '../utils/auth';
 
-const API_URL = 'http://localhost:8081/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8081/api';
 
 export const AuthService = {
     login: async (credentials: { email: string; password: string }) => {

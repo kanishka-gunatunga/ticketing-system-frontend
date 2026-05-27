@@ -2,6 +2,7 @@
 
 import Header from "@/components/Header";
 import Modal from "@/components/Modal";
+import SideMenu from "@/components/SideMenu";
 import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useCreateUser, useUpdateUser, useUsers } from "@/hooks/useUser";
@@ -226,9 +227,10 @@ export default function UserManagement() {
             />
 
             <Header title="User Administration" />
+            <SideMenu />
 
-            <main className="pt-28 px-8 max-w-[1440px] mx-auto flex flex-col gap-6">
-                <section className="bg-white rounded-2xl p-8 shadow-sm border border-gray-150 flex flex-col">
+            <main className="pt-30 px-16 ml-16 max-w-[1440px] mx-auto flex flex-col gap-6">
+                <section className="bg-white rounded-[30px] p-8 shadow-sm flex flex-col">
                     <div className="w-full flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
                         <div>
                             <h2 className="text-xl font-bold text-gray-900">User Roster</h2>
@@ -240,7 +242,7 @@ export default function UserManagement() {
                                 value={searchUserQuery}
                                 onChange={(e) => setSearchUserQuery(e.target.value)}
                                 placeholder="Search by name or email..."
-                                className="w-full sm:w-64 px-4 py-2 text-sm rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
+                                className="w-full sm:w-64 px-4 py-2 text-sm rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-red-100 transition"
                             />
                             <button
                                 className="px-4 py-2 bg-red-600 hover:bg-red-700 active:scale-95 text-white text-sm font-semibold rounded-xl transition shadow-md shadow-red-500/10 cursor-pointer"
@@ -254,10 +256,10 @@ export default function UserManagement() {
                         </div>
                     </div>
 
-                    <div className="w-full overflow-x-auto rounded-xl border border-gray-150">
+                    <div className="w-full overflow-x-auto rounded-[24px] shadow-[0_4px_20px_-4px_rgba(0,0,0,0.03)]">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="bg-gray-50 text-gray-500 font-bold text-xs uppercase tracking-wider border-b border-gray-150">
+                                <tr className="bg-gray-50/50 text-gray-500 font-bold text-xs uppercase tracking-wider">
                                     <th className="px-6 py-4">Full Name</th>
                                     <th className="px-6 py-4">Contact</th>
                                     <th className="px-6 py-4">Email</th>
@@ -295,7 +297,7 @@ export default function UserManagement() {
                                                 {item.role === 'Company' && item.products && Array.isArray(item.products) && item.products.length > 0 ? (
                                                     <div className="flex gap-1.5 flex-wrap">
                                                         {item.products.map((p: string) => (
-                                                            <span key={p} className="px-1.5 py-0.5 bg-gray-100 border border-gray-200 text-gray-600 rounded text-[10px] uppercase font-bold">
+                                                            <span key={p} className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px] uppercase font-bold">
                                                                 {p} {item.instant_ids?.[p] ? `(${item.instant_ids[p]})` : ''}
                                                             </span>
                                                         ))}
@@ -313,7 +315,7 @@ export default function UserManagement() {
                                                         setIsEditing(false);
                                                         setIsUserDetailsModalOpen(true);
                                                     }}
-                                                    className="px-3 py-1.5 border border-gray-200 hover:border-red-200 hover:bg-red-50 text-gray-600 hover:text-red-700 text-xs font-semibold rounded-lg transition active:scale-95 cursor-pointer"
+                                                    className="px-3 py-1.5 hover:bg-red-50 text-gray-600 hover:text-red-700 text-xs font-semibold rounded-lg transition active:scale-95 cursor-pointer"
                                                 >
                                                     View / Edit
                                                 </button>

@@ -58,7 +58,7 @@ export const TicketColumn: React.FC<TicketColumnProps> = ({
     const cStyle = getColumnStyle(title);
 
     return (
-        <div className="flex flex-col flex-1 min-w-[280px] bg-gray-100/50 rounded-2xl border border-gray-200/50 p-4 h-[calc(100vh-280px)] overflow-hidden">
+        <div className="flex flex-col w-full bg-gray-100/50 rounded-2xl border border-gray-200/50 p-4 h-[calc(100vh-280px)] overflow-hidden">
             {/* Column Header */}
             <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center gap-2">

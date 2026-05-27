@@ -12,6 +12,7 @@ import { useCurrentUser } from "@/utils/auth";
 import { useDebounce } from "@/hooks/useDebounce";
 import { useToast } from "@/hooks/useToast";
 import { Table } from "antd";
+import SideMenu from "@/components/SideMenu";
 import {
     Search,
     LayoutGrid,
@@ -25,6 +26,8 @@ import {
     PlusCircle
 } from "lucide-react";
 import axios from "axios";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api";
 
 export default function Leads() {
     const user = useCurrentUser();
@@ -68,7 +71,7 @@ export default function Leads() {
     // Fetch Agents for manual Admin assignment
     useEffect(() => {
         if (user && user.role === "Admin") {
-            axios.get("http://localhost:8081/api/users")
+            axios.get(`${API_URL}/users`)
                 .then(res => {
                     const filtered = res.data.filter((u: any) => u.role === "AgentL1" || u.role === "AgentL2");
                     setAgents(filtered);
@@ -293,6 +296,7 @@ export default function Leads() {
             />
 
             <Header title="Support Sphere Portal" />
+            <SideMenu />
 
             <main className="pt-30 px-16 ml-16 max-w-[1440px] mx-auto flex flex-col gap-8">
                 
@@ -454,26 +458,26 @@ export default function Leads() {
                     ) : viewMode === "kanban" && user.role !== "Company" ? (
                         
                         /* Kanban Column Board Grid */
-                        <div className="w-full grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 items-start overflow-x-auto pb-4 no-scrollbar">
+                        <div className="w-full flex flex-row gap-4 items-start overflow-x-auto pb-4">
                             {user.role === "Admin" ? (
                                 <>
-                                    <TicketColumn title="New" tickets={tickets.filter(t => t.status === "New")} onViewDetails={handleOpenDetails} />
-                                    <TicketColumn title="Assigned L1" tickets={tickets.filter(t => t.status === "Assigned L1")} onViewDetails={handleOpenDetails} />
-                                    <TicketColumn title="Escalated" tickets={tickets.filter(t => t.status === "Escalated")} onViewDetails={handleOpenDetails} />
-                                    <TicketColumn title="Assigned L2" tickets={tickets.filter(t => t.status === "Assigned L2")} onViewDetails={handleOpenDetails} />
-                                    <TicketColumn title="Resolved" tickets={tickets.filter(t => t.status === "Resolved")} onViewDetails={handleOpenDetails} />
+                                    <div className="flex-1 min-w-[220px]"><TicketColumn title="New" tickets={tickets.filter(t => t.status === "New")} onViewDetails={handleOpenDetails} /></div>
+                                    <div className="flex-1 min-w-[220px]"><TicketColumn title="Assigned L1" tickets={tickets.filter(t => t.status === "Assigned L1")} onViewDetails={handleOpenDetails} /></div>
+                                    <div className="flex-1 min-w-[220px]"><TicketColumn title="Escalated" tickets={tickets.filter(t => t.status === "Escalated")} onViewDetails={handleOpenDetails} /></div>
+                                    <div className="flex-1 min-w-[220px]"><TicketColumn title="Assigned L2" tickets={tickets.filter(t => t.status === "Assigned L2")} onViewDetails={handleOpenDetails} /></div>
+                                    <div className="flex-1 min-w-[220px]"><TicketColumn title="Resolved" tickets={tickets.filter(t => t.status === "Resolved")} onViewDetails={handleOpenDetails} /></div>
                                 </>
                             ) : user.role === "AgentL1" ? (
                                 <>
-                                    <TicketColumn title="New" tickets={tickets.filter(t => t.status === "New")} onViewDetails={handleOpenDetails} onAssign={handleSelfAssign} />
-                                    <TicketColumn title="Assigned L1" tickets={tickets.filter(t => t.status === "Assigned L1")} onViewDetails={handleOpenDetails} />
-                                    <TicketColumn title="Resolved" tickets={tickets.filter(t => t.status === "Resolved")} onViewDetails={handleOpenDetails} />
+                                    <div className="flex-1 min-w-[220px]"><TicketColumn title="New" tickets={tickets.filter(t => t.status === "New")} onViewDetails={handleOpenDetails} onAssign={handleSelfAssign} /></div>
+                                    <div className="flex-1 min-w-[220px]"><TicketColumn title="Assigned L1" tickets={tickets.filter(t => t.status === "Assigned L1")} onViewDetails={handleOpenDetails} /></div>
+                                    <div className="flex-1 min-w-[220px]"><TicketColumn title="Resolved" tickets={tickets.filter(t => t.status === "Resolved")} onViewDetails={handleOpenDetails} /></div>
                                 </>
                             ) : (
                                 <>
-                                    <TicketColumn title="Escalated" tickets={tickets.filter(t => t.status === "Escalated")} onViewDetails={handleOpenDetails} onAssign={handleSelfAssign} />
-                                    <TicketColumn title="Assigned L2" tickets={tickets.filter(t => t.status === "Assigned L2")} onViewDetails={handleOpenDetails} />
-                                    <TicketColumn title="Resolved" tickets={tickets.filter(t => t.status === "Resolved")} onViewDetails={handleOpenDetails} />
+                                    <div className="flex-1 min-w-[220px]"><TicketColumn title="Escalated" tickets={tickets.filter(t => t.status === "Escalated")} onViewDetails={handleOpenDetails} onAssign={handleSelfAssign} /></div>
+                                    <div className="flex-1 min-w-[220px]"><TicketColumn title="Assigned L2" tickets={tickets.filter(t => t.status === "Assigned L2")} onViewDetails={handleOpenDetails} /></div>
+                                    <div className="flex-1 min-w-[220px]"><TicketColumn title="Resolved" tickets={tickets.filter(t => t.status === "Resolved")} onViewDetails={handleOpenDetails} /></div>
                                 </>
                             )}
                         </div>

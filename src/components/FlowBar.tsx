@@ -5,12 +5,7 @@ import { ChevronDown } from "lucide-react";
 
 // Types for each variant
 export type SalesStatus = "New" | "Ongoing" | "Won" | "Lost";
-export type ComplainStatus =
-    | "New"
-    | "In Review"
-    | "Processing"
-    | "Approval"
-    | "Completed";
+export type ComplainStatus = "New" | "In Review" | "Completed";
 
 // Generic props interface
 interface FlowBarProps<T extends string> {
@@ -26,7 +21,7 @@ export default function FlowBar<T extends string>({
 }: FlowBarProps<T>) {
     const stepsMap = {
         sales: ["New", "Ongoing", "WonLost"],
-        complains: ["New", "In Review", "Processing", "Approval", "Completed"],
+        complains: ["New", "In Review", "Completed"],
     };
 
     const steps = stepsMap[variant];
@@ -62,8 +57,6 @@ export default function FlowBar<T extends string>({
                 switch (step) {
                     case "New": return "#DB2727"; // Red
                     case "In Review": return "#F59E0B"; // Amber
-                    case "Processing": return "#3B82F6"; // Blue (Fixed hex)
-                    case "Approval": return "#8B5CF6"; // Purple
                     case "Completed": return "#10B981"; // Green
                     default: return "#DB2727";
                 }
@@ -89,10 +82,7 @@ export default function FlowBar<T extends string>({
         variant: "sales" | "complains";
     }) => {
         // widths based on variant
-        const baseClass =
-            variant === "sales"
-                ? "w-[282px] h-[50px] max-[1250px]:w-[240px] max-[1130px]:w-[210px] max-[1060px]:w-[190px] max-[1000px]:w-[190px]"
-                : "w-[170px] h-[50px] max-[1250px]:w-[160px] max-[1130px]:w-[150px] max-[1060px]:w-[130px] max-[1000px]:w-[130px]";
+        const baseClass = "w-[282px] h-[50px] max-[1250px]:w-[240px] max-[1130px]:w-[210px] max-[1060px]:w-[190px] max-[1000px]:w-[190px]";
 
         return (
             <div
@@ -134,9 +124,7 @@ export default function FlowBar<T extends string>({
                                 : "cursor-pointer"
                             : ""
                             } ${i !== steps.length - 1
-                                ? variant === "sales"
-                                    ? "-mr-14 max-[1250px]:-mr-10 max-[1130px]:-mr-[36px] max-[1060px]:-mr-[32px] max-[1000px]:-mr-8"
-                                    : "-mr-8 max-[1250px]:-mr-8 max-[1130px]:-mr-8 max-[1060px]:-mr-[27px] max-[1000px]:-mr-2"
+                                ? "-mr-14 max-[1250px]:-mr-10 max-[1130px]:-mr-[36px] max-[1060px]:-mr-[32px] max-[1000px]:-mr-8"
                                 : ""
                             }`}
                     >
