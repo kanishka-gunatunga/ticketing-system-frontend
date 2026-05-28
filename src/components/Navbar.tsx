@@ -4,10 +4,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
-import { signOut } from "next-auth/react";
-import { useCurrentUser } from "@/utils/auth";
-import { usePathname } from "next/navigation";
-// import NotificationDropdown from "@/components/NotificationDropdown";
+import { useCurrentUser, logOutUser } from "@/utils/auth";
+import { usePathname, useRouter } from "next/navigation";
 
 // Define Role locally if types/role doesn't exist
 export type Role = "ADMIN" | "CALLAGENT" | "SALES01" | "SALES02" | "TELEMARKETER" | string;
@@ -17,6 +15,7 @@ const Navbar = () => {
 
     const user = useCurrentUser();
     const pathname = usePathname();
+    const router = useRouter();
 
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
@@ -104,7 +103,8 @@ const Navbar = () => {
                                     <button
                                         onClick={() => {
                                             setIsDropdownOpen(false);
-                                            signOut({ callbackUrl: "/login" });
+                                            logOutUser();
+                                            router.replace("/login");
                                         }}
                                         className="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors font-medium cursor-pointer"
                                     >

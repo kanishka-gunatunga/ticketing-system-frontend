@@ -48,7 +48,7 @@ export default function TicketChatPage() {
     return (
         <div className="relative w-full min-h-screen bg-[#E6E6E6B2]/70 backdrop-blur-md text-gray-900 montserrat pb-16">
             {/* Top nav header */}
-            <Header title="Support Sphere Portal" />
+            <Header title="Digitrust Ticketing System" />
 
             {/* Left side menu — passes ticketId so the chat icon stays highlighted */}
             <SideMenu ticketId={ticketId} />

@@ -48,9 +48,9 @@ const Header: React.FC<HeaderProps> = ({ title }) => {
                     </div>
                     <div>
                         <h1 className="text-xl font-bold tracking-tight text-gray-900">
-                            {title || "Support Sphere"}
+                            {title || "Digitrust Ticketing System"}
                         </h1>
-                        <p className="text-xs text-gray-500 font-medium">Ticketing & Escalation Hub</p>
+                        <p className="text-xs text-gray-500 font-medium">Secure Ticketing & SLA Escalation Hub</p>
                     </div>
                 </div>
 

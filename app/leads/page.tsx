@@ -295,7 +295,7 @@ export default function Leads() {
                 onClose={hideToast}
             />
 
-            <Header title="Support Sphere Portal" />
+            <Header title="Digitrust Ticketing System" />
             <SideMenu />
 
             <main className="pt-30 px-16 ml-16 max-w-[1440px] mx-auto flex flex-col gap-8">
