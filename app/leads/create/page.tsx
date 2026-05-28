@@ -27,16 +27,16 @@ type FormFieldProps = {
 };
 
 function FormField({
-                       label,
-                       placeholder,
-                       isIcon = false,
-                       type = "text",
-                       options = [],
-                       register,
-                       error,
-                       disabled = false,
-                       ...rest
-                   }: FormFieldProps) {
+    label,
+    placeholder,
+    isIcon = false,
+    type = "text",
+    options = [],
+    register,
+    error,
+    disabled = false,
+    ...rest
+}: FormFieldProps) {
     const baseInputClasses = `w-full ${isIcon ? "px-10" : "px-4"} py-4 rounded-3xl bg-white/80 backdrop-blur text-sm placeholder-[#575757] focus:outline-none focus:ring-2 focus:ring-red-700 ${disabled ? "bg-gray-200" : ""}`;
 
     return (
@@ -57,7 +57,7 @@ function FormField({
                         className={baseInputClasses}
                         {...register}
                         disabled={disabled}
-                        style={{appearance: "none"}}
+                        style={{ appearance: "none" }}
                         {...rest}
                     >
                         <option value="">{placeholder || "Select an option"}</option>
@@ -104,7 +104,7 @@ function FormField({
                         fill="none"
                         xmlns="http://www.w3.org/2000/svg"
                     >
-                        <path d="M9.9142 0.58667L5.12263 5.37824L0.331055 0.58667H9.9142Z" fill="#575757"/>
+                        <path d="M9.9142 0.58667L5.12263 5.37824L0.331055 0.58667H9.9142Z" fill="#575757" />
                     </svg>
                 )}
 
@@ -135,7 +135,7 @@ export default function CreateLead() {
     const [ticketPriority, setTicketPriority] = useState("Medium");
     const [ticketProduct, setTicketProduct] = useState("");
     const [ticketInstantId, setTicketInstantId] = useState("");
-    
+
     // Requester info
     const [reqName, setReqName] = useState("");
     const [reqEmail, setReqEmail] = useState("");
@@ -154,8 +154,30 @@ export default function CreateLead() {
     const [isPending, setIsPending] = useState(false);
 
     // Options maps
-    const productOptions = (user?.products || []).map((p: string) => ({ value: p, label: p }));
-    
+    let productsArray: string[] = [];
+    if (user?.products) {
+        if (Array.isArray(user.products)) {
+            productsArray = user.products;
+        } else {
+            const rawProducts = String(user.products);
+            try {
+                const parsed = JSON.parse(rawProducts);
+                if (Array.isArray(parsed)) {
+                    productsArray = parsed;
+                } else {
+                    productsArray = [rawProducts];
+                }
+            } catch {
+                if (rawProducts.includes(',')) {
+                    productsArray = rawProducts.split(',').map((p: string) => p.trim());
+                } else {
+                    productsArray = [rawProducts];
+                }
+            }
+        }
+    }
+    const productOptions = productsArray.map((p: string) => ({ value: p, label: p }));
+
     const categoryOptions = [
         { value: "Technical Issue", label: "Technical Issue" },
         { value: "Bug Report", label: "Bug Report" },
@@ -314,7 +336,7 @@ export default function CreateLead() {
             });
 
             showToast("Support Inquiry created successfully!", "success");
-            
+
             setTimeout(() => {
                 router.push("/leads");
             }, 1500);
@@ -345,8 +367,8 @@ export default function CreateLead() {
             <Header title="Digitrust Ticketing System" />
             <SideMenu />
 
-            <main className="pt-28 px-8 max-w-[1440px] mx-auto flex flex-col gap-6">
-                
+            <main className="pt-28 px-8 max-w-[1350px] mx-auto flex flex-col gap-6">
+
                 {/* Back button */}
                 <div className="flex items-center">
                     <button
@@ -362,7 +384,7 @@ export default function CreateLead() {
                 <section className="relative bg-[#FFFFFF4D] bg-opacity-30 rounded-[45px] px-14 py-10 flex justify-between items-center border border-gray-200/50 shadow-xl">
                     <form onSubmit={onSubmit} className="flex flex-col w-full">
                         <div className="flex-1 space-y-6">
-                            
+
                             {/* Heading and Action Row */}
                             <div className="flex flex-row items-center justify-between border-b border-gray-200/40 pb-6">
                                 <h2 className="font-semibold text-[22px] text-[#000000] mb-0">Create Support Ticket</h2>
