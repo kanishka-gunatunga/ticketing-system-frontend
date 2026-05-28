@@ -153,6 +153,20 @@ export default function CreateLead() {
 
     const [isPending, setIsPending] = useState(false);
 
+    const parseInstantIds = (instantIds: any): Record<string, string> => {
+        if (!instantIds) return {};
+        if (typeof instantIds === 'object') return instantIds;
+        if (typeof instantIds === 'string') {
+            try {
+                const parsed = JSON.parse(instantIds);
+                return typeof parsed === 'object' ? parsed : {};
+            } catch {
+                return {};
+            }
+        }
+        return {};
+    };
+
     // Options maps
     let productsArray: string[] = [];
     if (user?.products) {
@@ -206,10 +220,11 @@ export default function CreateLead() {
     // --- Handle Dynamic Dropdowns for Company User ---
     useEffect(() => {
         if (user && user.role === "Company") {
-            const licensedProducts = user.products || [];
+            const licensedProducts = productsArray;
+            const instantIdsObj = parseInstantIds(user.instant_ids);
             if (licensedProducts.length > 0) {
                 setTicketProduct(licensedProducts[0]);
-                setTicketInstantId(user.instant_ids?.[licensedProducts[0]] || "");
+                setTicketInstantId(instantIdsObj[licensedProducts[0]] || "");
             }
             // Pre-fill requester info
             setReqName(user.full_name || user.name || "");
@@ -222,9 +237,8 @@ export default function CreateLead() {
 
     const handleProductChange = (prod: string) => {
         setTicketProduct(prod);
-        if (user && user.instant_ids) {
-            setTicketInstantId(user.instant_ids[prod] || "");
-        }
+        const instantIdsObj = parseInstantIds(user?.instant_ids);
+        setTicketInstantId(instantIdsObj[prod] || "");
     };
 
     // -- File Upload Handlers --
