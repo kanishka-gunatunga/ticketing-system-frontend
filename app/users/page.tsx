@@ -19,6 +19,34 @@ const ROLES = {
     AGENTL2: "AgentL2",
 };
 
+const parseProducts = (products: any): string[] => {
+    if (!products) return [];
+    if (Array.isArray(products)) return products;
+    if (typeof products === 'string') {
+        try {
+            const parsed = JSON.parse(products);
+            return Array.isArray(parsed) ? parsed : [products];
+        } catch {
+            return products.includes(',') ? products.split(',').map(p => p.trim()) : [products];
+        }
+    }
+    return [];
+};
+
+const parseInstantIds = (instantIds: any): Record<string, string> => {
+    if (!instantIds) return {};
+    if (typeof instantIds === 'object') return instantIds;
+    if (typeof instantIds === 'string') {
+        try {
+            const parsed = JSON.parse(instantIds);
+            return typeof parsed === 'object' ? parsed : {};
+        } catch {
+            return {};
+        }
+    }
+    return {};
+};
+
 export default function UserManagement() {
     const user = useCurrentUser();
     const { toast, showToast, hideToast } = useToast();
@@ -294,24 +322,30 @@ export default function UserManagement() {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4">
-                                                {item.role === 'Company' && item.products && Array.isArray(item.products) && item.products.length > 0 ? (
-                                                    <div className="flex gap-1.5 flex-wrap">
-                                                        {item.products.map((p: string) => (
-                                                            <span key={p} className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px] uppercase font-bold">
-                                                                {p} {item.instant_ids?.[p] ? `(${item.instant_ids[p]})` : ''}
-                                                            </span>
-                                                        ))}
-                                                    </div>
-                                                ) : "-"}
+                                                {(() => {
+                                                    const productsList = parseProducts(item.products);
+                                                    const instantIdsObj = parseInstantIds(item.instant_ids);
+                                                    return item.role === 'Company' && productsList.length > 0 ? (
+                                                        <div className="flex gap-1.5 flex-wrap">
+                                                            {productsList.map((p: string) => (
+                                                                <span key={p} className="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded text-[10px] uppercase font-bold">
+                                                                    {p} {instantIdsObj[p] ? `(${instantIdsObj[p]})` : ''}
+                                                                </span>
+                                                            ))}
+                                                        </div>
+                                                    ) : "-";
+                                                })()}
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <button
                                                     onClick={() => {
+                                                        const productsList = parseProducts(item.products);
+                                                        const instantIdsObj = parseInstantIds(item.instant_ids);
                                                         setSelectedUser(item);
-                                                        setHasDMS(item.products?.includes("DMS") || false);
-                                                        setHasHRIS(item.products?.includes("HRIS") || false);
-                                                        setDmsInstantId(item.instant_ids?.["DMS"] || "");
-                                                        setHrisInstantId(item.instant_ids?.["HRIS"] || "");
+                                                        setHasDMS(productsList.includes("DMS"));
+                                                        setHasHRIS(productsList.includes("HRIS"));
+                                                        setDmsInstantId(instantIdsObj["DMS"] || "");
+                                                        setHrisInstantId(instantIdsObj["HRIS"] || "");
                                                         setIsEditing(false);
                                                         setIsUserDetailsModalOpen(true);
                                                     }}
@@ -592,18 +626,22 @@ export default function UserManagement() {
                                     </div>
                                 ) : (
                                     <div className="space-y-2">
-                                        {selectedUser.products && Array.isArray(selectedUser.products) && selectedUser.products.length > 0 ? (
-                                            selectedUser.products.map((p: string) => (
-                                                <div key={p} className="flex justify-between items-center text-xs py-1 border-b border-gray-200/50">
-                                                    <span className="font-bold text-gray-700 uppercase">{p} Product</span>
-                                                    <span className="font-semibold text-gray-600 bg-white px-2 py-0.5 border rounded">
-                                                        Instant ID: {selectedUser.instant_ids?.[p] || "-"}
-                                                    </span>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <p className="text-xs text-gray-400">No licensed products setup</p>
-                                        )}
+                                        {(() => {
+                                            const productsList = parseProducts(selectedUser.products);
+                                            const instantIdsObj = parseInstantIds(selectedUser.instant_ids);
+                                            return productsList.length > 0 ? (
+                                                productsList.map((p: string) => (
+                                                    <div key={p} className="flex justify-between items-center text-xs py-1 border-b border-gray-200/50">
+                                                        <span className="font-bold text-gray-700 uppercase">{p} Product</span>
+                                                        <span className="font-semibold text-gray-600 bg-white px-2 py-0.5 border rounded">
+                                                            Instant ID: {instantIdsObj[p] || "-"}
+                                                        </span>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <p className="text-xs text-gray-400">No licensed products setup</p>
+                                            );
+                                        })()}
                                     </div>
                                 )}
                             </div>
