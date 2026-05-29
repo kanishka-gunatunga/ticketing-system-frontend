@@ -6,7 +6,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import axios from "axios";
-import { ArrowLeft, Clock, User, Mail, Phone, Briefcase, Globe, Info, PlusCircle, Paperclip, CheckCircle2, UserPlus, ArrowUpRight, FileText, MessageSquare } from "lucide-react";
+import { ArrowLeft, Clock, User, Mail, Phone, Briefcase, Globe, Info, PlusCircle, Paperclip, CheckCircle2, UserPlus, ArrowUpRight, FileText, MessageSquare, Bell } from "lucide-react";
 import { message } from "antd";
 
 import Header from "@/components/Header";
@@ -188,6 +188,21 @@ export default function TicketDetailsPage() {
         }
     };
 
+    const handleRemindAgent = async () => {
+        if (!ticket || !user) return;
+        setIsSubmittingAction(true);
+        try {
+            await LeadsService.remindAgent(ticket.id, user.id);
+            showToast("Update reminder successfully sent to the assigned agent/queue!", "success");
+            await fetchTicketDetails();
+        } catch (err: any) {
+            console.error("Error sending update reminder nudge:", err);
+            showToast("Failed to send update reminder", "error");
+        } finally {
+            setIsSubmittingAction(false);
+        }
+    };
+
     // Mapping dynamic ticket status to FlowBar's ComplainStatus
     const getFlowBarStatus = (status: Ticket["status"]): ComplainStatus => {
         switch (status) {
@@ -304,6 +319,21 @@ export default function TicketDetailsPage() {
                         disabled={isSubmittingAction}
                     >
                         {isSubmittingAction ? "Resolving..." : "Resolve Ticket"}
+                    </button>
+                );
+            }
+        }
+
+        if (user.role === "Company") {
+            if (ticket.status !== "Resolved" && ticket.status !== "Closed") {
+                return (
+                    <button
+                        onClick={handleRemindAgent}
+                        className="h-[40px] rounded-[22.98px] px-6 font-medium text-sm bg-amber-500 hover:bg-amber-600 text-white transition duration-200 active:scale-95 shadow-md flex items-center gap-2 cursor-pointer border border-transparent"
+                        disabled={isSubmittingAction}
+                    >
+                        <Bell className="w-4 h-4" />
+                        {isSubmittingAction ? "Sending..." : "Remind Agent"}
                     </button>
                 );
             }

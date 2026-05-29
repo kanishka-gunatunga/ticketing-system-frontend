@@ -148,5 +148,10 @@ export const LeadsService = {
     adminAssign: async (id: number, agentId: number, adminId: number) => {
         const response = await axios.post(`${API_URL}/tickets/${id}/admin-assign`, { agentId, adminId });
         return response.data;
+    },
+
+    remindAgent: async (id: number, userId: number) => {
+        const response = await axios.post(`${API_URL}/tickets/${id}/remind`, { userId });
+        return response.data;
     }
 };
