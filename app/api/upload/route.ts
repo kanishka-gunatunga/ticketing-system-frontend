@@ -13,10 +13,22 @@ export async function POST(request: Request): Promise<NextResponse> {
         return NextResponse.json({ error: 'No file body provided' }, { status: 400 });
     }
 
-    const blob = await put(filename, request.body, {
-        access: 'public',
-        token: process.env.BLOB_READ_WRITE_TOKEN,
-    });
+    const token = process.env.BLOB_READ_WRITE_TOKEN;
+    if (!token) {
+        console.error("Error: BLOB_READ_WRITE_TOKEN is not defined in the process environment! Please restart your Next.js development server to load your .env credentials.");
+        return NextResponse.json({ error: 'Missing Vercel Blob token credentials. Please restart your Next.js development server.' }, { status: 500 });
+    }
 
-    return NextResponse.json(blob);
+    try {
+        const blob = await put(filename, request.body, {
+            access: 'public',
+            token: token,
+            addRandomSuffix: true,
+        });
+
+        return NextResponse.json(blob);
+    } catch (error: any) {
+        console.error("Vercel Blob upload failed:", error);
+        return NextResponse.json({ error: error.message || 'Vercel Blob upload failed' }, { status: 500 });
+    }
 }

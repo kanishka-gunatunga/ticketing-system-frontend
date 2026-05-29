@@ -65,7 +65,8 @@ export function useLeads(filters: any = {}) {
                     role: user.role,
                     userId: user.id,
                     status: filters.status,
-                    priority: filters.priority
+                    priority: filters.priority,
+                    category: filters.category
                 }
             });
 
@@ -105,7 +106,7 @@ export function useLeads(filters: any = {}) {
         } finally {
             setIsLoading(false);
         }
-    }, [user, filters.status, filters.priority, filters.search, filters.page, filters.limit]);
+    }, [user, filters.status, filters.priority, filters.category, filters.search, filters.page, filters.limit]);
 
     useEffect(() => {
         fetchLeads();

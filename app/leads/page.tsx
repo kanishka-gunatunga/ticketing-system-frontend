@@ -357,13 +357,9 @@ export default function Leads() {
                                     >
                                         <option>All Status</option>
                                         <option value="New">New</option>
-                                        {user.role !== "Company" && (
-                                            <>
-                                                <option value="Assigned L1">Assigned L1</option>
-                                                <option value="Escalated">Escalated</option>
-                                                <option value="Assigned L2">Assigned L2</option>
-                                            </>
-                                        )}
+                                        <option value="Assigned L1">Assigned L1</option>
+                                        <option value="Escalated">Escalated</option>
+                                        <option value="Assigned L2">Assigned L2</option>
                                         <option value="Resolved">Resolved</option>
                                         <option value="Closed">Closed</option>
                                     </select>
