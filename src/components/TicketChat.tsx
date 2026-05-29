@@ -116,16 +116,18 @@ export default function TicketChat({
     const hasScrolledInitial = useRef(false);
 
     useEffect(() => {
-        if (!isActive) {
+        if (ticketStatus === "New") {
             setIsLoadingInitial(false);
             return;
         }
         fetchMessages();
-        pollingRef.current = setInterval(fetchMessages, POLL_INTERVAL_MS);
+        if (isActive) {
+            pollingRef.current = setInterval(fetchMessages, POLL_INTERVAL_MS);
+        }
         return () => {
             if (pollingRef.current) clearInterval(pollingRef.current);
         };
-    }, [fetchMessages, isActive]);
+    }, [fetchMessages, isActive, ticketStatus]);
 
     useEffect(() => {
         if (messages.length > 0 && !hasScrolledInitial.current) {
@@ -187,7 +189,7 @@ export default function TicketChat({
     const grouped = groupByDate(messages);
 
     // -- Disabled state --
-    if (!isActive) {
+    if (ticketStatus === "New") {
         return (
             <section className="ticket-chat-section">
                 <div className="ticket-chat-header">
@@ -231,16 +233,24 @@ export default function TicketChat({
                     <div>
                         <h3 className="ticket-chat-title">Ticket Chat</h3>
                         <p className="ticket-chat-subtitle">
-                            {assignedToId
+                            {!isActive
+                                ? "Conversation history (Read-only)"
+                                : assignedToId
                                 ? "Live channel between you and the assigned agent"
                                 : "Waiting for agent assignment"}
                         </p>
                     </div>
                 </div>
-                <span className="ticket-chat-badge ticket-chat-badge--active">
-                    <span className="ticket-chat-pulse" />
-                    Live
-                </span>
+                {isActive ? (
+                    <span className="ticket-chat-badge ticket-chat-badge--active">
+                        <span className="ticket-chat-pulse" />
+                        Live
+                    </span>
+                ) : (
+                    <span className="ticket-chat-badge ticket-chat-badge--disabled">
+                        {ticketStatus}
+                    </span>
+                )}
             </div>
 
             {/* Messages area */}
@@ -399,7 +409,11 @@ export default function TicketChat({
                     <div className="ticket-chat-input-bar">
                         <div className="ticket-chat-readonly-notice">
                             <Lock size={14} />
-                            <span>You can view this conversation but cannot send messages.</span>
+                            <span>
+                                {ticketStatus === "Resolved" || ticketStatus === "Closed"
+                                    ? `This ticket is currently ${ticketStatus}. Chat is read-only.`
+                                    : "You can view this conversation but cannot send messages."}
+                            </span>
                         </div>
                     </div>
                 )}
