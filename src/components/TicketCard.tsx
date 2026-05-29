@@ -21,6 +21,7 @@ export const TicketCard: React.FC<TicketCardProps> = ({
     category,
     requester_name,
     created_at,
+    createdAt,
     assignee,
     onViewDetails,
     onAssign
@@ -70,11 +71,12 @@ export const TicketCard: React.FC<TicketCardProps> = ({
         );
 
     const formattedDate = (() => {
-        if (!created_at) return "—";
+        const rawDate = created_at || createdAt;
+        if (!rawDate) return "—";
         // Normalize MySQL-style "YYYY-MM-DD HH:MM:SS" to ISO format browsers can parse
-        const normalized = typeof created_at === "string"
-            ? created_at.replace(" ", "T")
-            : created_at;
+        const normalized = typeof rawDate === "string"
+            ? rawDate.replace(" ", "T")
+            : rawDate;
         const d = new Date(normalized);
         if (isNaN(d.getTime())) return "—";
         return d.toLocaleDateString("en-US", {

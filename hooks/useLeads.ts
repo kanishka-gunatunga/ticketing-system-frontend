@@ -26,6 +26,8 @@ export interface Ticket {
     assigned_to?: number;
     created_at: string;
     updated_at: string;
+    createdAt?: string;
+    updatedAt?: string;
     companyCreator?: { id: number; name: string; email: string; contact_no: string };
     assignee?: { id: number; name: string; email: string; role: string };
     activities?: Array<{
