@@ -9,7 +9,7 @@ import SideMenu from "@/components/SideMenu";
 import { useCurrentUser } from "@/utils/auth";
 import { useToast } from "@/hooks/useToast";
 import { LeadsService } from "@/hooks/useLeads";
-import { ArrowLeft, Paperclip, X, ImageIcon, Loader2 } from "lucide-react";
+import { ArrowLeft, Paperclip, X, ImageIcon, Loader2, FileText } from "lucide-react";
 import { uploadToBlob } from "@/utils/uploadBlob";
 
 type FormFieldProps = {
@@ -610,6 +610,12 @@ export default function CreateLead() {
                                                         alt={att.file.name}
                                                         className="w-full h-full object-cover"
                                                     />
+                                                ) : att.file.type === "application/pdf" || att.file.name.toLowerCase().endsWith(".pdf") ? (
+                                                    <div className="w-full h-full flex flex-col items-center justify-center bg-red-50/50 text-red-550 p-2 text-center">
+                                                        <FileText className="w-6 h-6 mb-1 text-red-500" />
+                                                        <span className="text-[9px] font-bold uppercase tracking-wider text-red-600">PDF File</span>
+                                                        <span className="text-[9px] truncate w-full text-center text-gray-500 mt-0.5">{att.file.name}</span>
+                                                    </div>
                                                 ) : (
                                                     <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 text-gray-500 p-2 text-center">
                                                         <Paperclip className="w-6 h-6 mb-1" />

@@ -483,18 +483,50 @@ export default function TicketDetailsPage() {
                                                 </span>
                                                 <div className="flex flex-wrap gap-2">
                                                     {urls.map((url, i) => {
-                                                        const isImage = /\.(png|jpg|jpeg|gif|webp|svg)$/i.test(url) || url.includes('blob.vercel-storage.com');
-                                                        return isImage ? (
+                                                        const cleanUrl = url.split('?')[0];
+                                                        const isImage = /\.(png|jpg|jpeg|gif|webp|svg)$/i.test(cleanUrl);
+                                                        const isPdf = /\.pdf$/i.test(cleanUrl);
+                                                        
+                                                        const filename = (() => {
+                                                            try {
+                                                                const parts = url.split('/');
+                                                                const lastPart = parts[parts.length - 1];
+                                                                return decodeURIComponent(lastPart.split('?')[0]);
+                                                            } catch {
+                                                                return `File ${i + 1}`;
+                                                            }
+                                                        })();
+
+                                                        if (isImage) {
+                                                            return (
+                                                                <a key={i} href={url} target="_blank" rel="noreferrer"
+                                                                    className="block w-24 h-24 rounded-2xl overflow-hidden border border-gray-200 hover:border-red-300 transition shadow-sm flex-shrink-0"
+                                                                    title={filename}>
+                                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                                    <img src={url} alt={filename} className="w-full h-full object-cover" />
+                                                                </a>
+                                                            );
+                                                        }
+
+                                                        if (isPdf) {
+                                                            return (
+                                                                <a key={i} href={url} target="_blank" rel="noreferrer"
+                                                                    className="relative flex flex-col items-center justify-center w-24 h-24 rounded-2xl border border-gray-200 bg-white/80 hover:border-red-300 hover:bg-red-50/10 transition shadow-sm flex-shrink-0 text-center p-2 group"
+                                                                    title={filename}>
+                                                                    <FileText className="w-8 h-8 text-red-500 mb-1 group-hover:scale-110 transition duration-200" />
+                                                                    <span className="text-[10px] font-bold text-red-650 uppercase tracking-wider">PDF File</span>
+                                                                    <span className="text-[9px] text-gray-500 truncate w-full px-1 mt-1 font-medium">{filename}</span>
+                                                                </a>
+                                                            );
+                                                        }
+
+                                                        return (
                                                             <a key={i} href={url} target="_blank" rel="noreferrer"
-                                                                className="block w-24 h-24 rounded-2xl overflow-hidden border border-gray-200 hover:border-red-300 transition shadow-sm flex-shrink-0"
-                                                                title={`Attachment ${i + 1}`}>
-                                                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                                <img src={url} alt={`Attachment ${i + 1}`} className="w-full h-full object-cover" />
-                                                            </a>
-                                                        ) : (
-                                                            <a key={i} href={url} target="_blank" rel="noreferrer"
-                                                                className="flex items-center gap-1.5 text-xs text-red-600 hover:underline font-bold bg-white/80 py-2 px-3 rounded-xl border border-gray-200">
-                                                                <Paperclip className="w-3.5 h-3.5" /> File {i + 1}
+                                                                className="relative flex flex-col items-center justify-center w-24 h-24 rounded-2xl border border-gray-200 bg-white/80 hover:border-red-300 hover:bg-red-50/10 transition shadow-sm flex-shrink-0 text-center p-2 group"
+                                                                title={filename}>
+                                                                <Paperclip className="w-8 h-8 text-gray-500 mb-1 group-hover:scale-110 transition duration-200" />
+                                                                <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wider">File</span>
+                                                                <span className="text-[9px] text-gray-500 truncate w-full px-1 mt-1 font-medium">{filename}</span>
                                                             </a>
                                                         );
                                                     })}
