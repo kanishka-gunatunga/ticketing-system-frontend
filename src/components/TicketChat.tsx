@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import axios from "axios";
-import { Send, MessageSquare, Lock, Loader2, Paperclip, X, ImageIcon } from "lucide-react";
+import { Send, MessageSquare, Lock, Loader2, Paperclip, X, ImageIcon, FileText } from "lucide-react";
 import { uploadToBlob } from "@/utils/uploadBlob";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8081/api";
@@ -236,8 +236,8 @@ export default function TicketChat({
                             {!isActive
                                 ? "Conversation history (Read-only)"
                                 : assignedToId
-                                ? "Live channel between you and the assigned agent"
-                                : "Waiting for agent assignment"}
+                                    ? "Live channel between you and the assigned agent"
+                                    : "Waiting for agent assignment"}
                         </p>
                     </div>
                 </div>
@@ -294,22 +294,54 @@ export default function TicketChat({
                                                 </span>
                                             )}
 
-                                            {/* Image attachment */}
-                                            {msg.attachment_url && (
-                                                <a
-                                                    href={msg.attachment_url}
-                                                    target="_blank"
-                                                    rel="noreferrer"
-                                                    className={`ticket-chat-img-wrap ${isMine ? "ticket-chat-img-wrap--mine" : ""}`}
-                                                >
-                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                    <img
-                                                        src={msg.attachment_url}
-                                                        alt="attachment"
-                                                        className="ticket-chat-img"
-                                                    />
-                                                </a>
-                                            )}
+                                            {/* Attachment */}
+                                            {msg.attachment_url && (() => {
+                                                const cleanUrl = msg.attachment_url.split('?')[0];
+                                                const isPdf = /\.pdf$/i.test(cleanUrl);
+
+                                                if (isPdf) {
+                                                    const filename = (() => {
+                                                        try {
+                                                            const parts = msg.attachment_url.split('/');
+                                                            const lastPart = parts[parts.length - 1];
+                                                            return decodeURIComponent(lastPart.split('?')[0]);
+                                                        } catch {
+                                                            return "Document.pdf";
+                                                        }
+                                                    })();
+                                                    return (
+                                                        <a
+                                                            href={msg.attachment_url}
+                                                            target="_blank"
+                                                            rel="noreferrer"
+                                                            className={`ticket-chat-pdf-wrap ${isMine ? "ticket-chat-pdf-wrap--mine" : ""}`}
+                                                            title={filename}
+                                                        >
+                                                            <FileText size={28} className="text-red-500 flex-shrink-0" />
+                                                            <div className="ticket-chat-pdf-info">
+                                                                <span className="ticket-chat-pdf-filename">{filename}</span>
+                                                                <span className="ticket-chat-pdf-label">PDF Document</span>
+                                                            </div>
+                                                        </a>
+                                                    );
+                                                }
+
+                                                return (
+                                                    <a
+                                                        href={msg.attachment_url}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className={`ticket-chat-img-wrap ${isMine ? "ticket-chat-img-wrap--mine" : ""}`}
+                                                    >
+                                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                        <img
+                                                            src={msg.attachment_url}
+                                                            alt="attachment"
+                                                            className="ticket-chat-img"
+                                                        />
+                                                    </a>
+                                                );
+                                            })()}
 
                                             {/* Text message */}
                                             {msg.message && (
@@ -335,12 +367,19 @@ export default function TicketChat({
             <div className="ticket-chat-input-area">
                 {canChat ? (
                     <>
-                        {/* Pending image preview */}
+                        {/* Pending attachment preview */}
                         {pendingImage && (
                             <div className="ticket-chat-img-preview-bar">
                                 <div className="ticket-chat-img-preview-item">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img src={pendingImage.preview} alt="preview" className="ticket-chat-img-preview-thumb" />
+                                    {pendingImage.file.type === "application/pdf" || pendingImage.file.name.toLowerCase().endsWith(".pdf") ? (
+                                        <div className="ticket-chat-pdf-preview-thumb">
+                                            <FileText size={24} className="text-red-500" />
+                                            <span className="ticket-chat-pdf-preview-text">PDF</span>
+                                        </div>
+                                    ) : (
+                                        /* eslint-disable-next-line @next/next/no-img-element */
+                                        <img src={pendingImage.preview} alt="preview" className="ticket-chat-img-preview-thumb" />
+                                    )}
                                     {pendingImage.uploading && (
                                         <div className="ticket-chat-img-preview-overlay">
                                             <Loader2 size={16} className="ticket-chat-spinner" />
@@ -363,7 +402,7 @@ export default function TicketChat({
                             <input
                                 ref={fileInputRef}
                                 type="file"
-                                accept="image/*"
+                                accept="image/*,.pdf"
                                 className="hidden"
                                 onChange={(e) => {
                                     const f = e.target.files?.[0];
@@ -376,7 +415,7 @@ export default function TicketChat({
                                 className="ticket-chat-attach-btn"
                                 onClick={() => fileInputRef.current?.click()}
                                 disabled={!!pendingImage || isSending}
-                                title="Attach image"
+                                title="Attach image or PDF"
                             >
                                 <Paperclip size={18} />
                             </button>
@@ -841,6 +880,66 @@ export default function TicketChat({
                     width: 100%;
                     justify-content: center;
                 }
+
+                .ticket-chat-pdf-preview-thumb {
+                    width: 100%;
+                    height: 100%;
+                    background: #fdf2f2;
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    padding: 4px;
+                }
+                .ticket-chat-pdf-preview-text {
+                    font-size: 9px;
+                    font-weight: 700;
+                    color: #dc2626;
+                    margin-top: 2px;
+                    text-transform: uppercase;
+                }
+                .ticket-chat-pdf-wrap {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    padding: 10px 16px;
+                    border-radius: 16px;
+                    background: rgba(255, 255, 255, 0.9);
+                    border: 1px solid rgba(220, 220, 220, 0.6);
+                    max-width: 280px;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+                    transition: transform 0.15s, box-shadow 0.15s;
+                    text-decoration: none;
+                }
+                .ticket-chat-pdf-wrap--mine {
+                    background: rgba(255, 255, 255, 0.15);
+                    border-color: rgba(255, 255, 255, 0.25);
+                    color: #fff;
+                }
+                .ticket-chat-pdf-wrap:hover {
+                    transform: scale(1.02);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+                }
+                .ticket-chat-pdf-info {
+                    display: flex;
+                    flex-direction: column;
+                    min-width: 0;
+                }
+                .ticket-chat-pdf-filename {
+                    font-size: 13px;
+                    font-weight: 600;
+                    color: #2d2d2d;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .ticket-chat-pdf-label {
+                    font-size: 10px;
+                    font-weight: 500;
+                    color: #888;
+                }
+
             `}</style>
         </section>
     );
