@@ -140,9 +140,15 @@ export default function TicketChat({
     const handleImageSelect = async (file: File) => {
         const preview = URL.createObjectURL(file);
         setPendingImage({ file, preview, uploading: true });
+        setTimeout(() => {
+            inputRef.current?.focus();
+        }, 50);
         try {
             const url = await uploadToBlob(file);
             setPendingImage(prev => prev ? { ...prev, url, uploading: false } : null);
+            setTimeout(() => {
+                inputRef.current?.focus();
+            }, 50);
         } catch {
             setPendingImage(null);
             URL.revokeObjectURL(preview);
@@ -152,6 +158,9 @@ export default function TicketChat({
     const clearPendingImage = () => {
         if (pendingImage) URL.revokeObjectURL(pendingImage.preview);
         setPendingImage(null);
+        setTimeout(() => {
+            inputRef.current?.focus();
+        }, 50);
     };
 
     const handleSend = async () => {
