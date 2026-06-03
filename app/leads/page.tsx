@@ -418,33 +418,35 @@ export default function Leads() {
                         </div>
 
                         {/* Layout Toggle buttons */}
-                        <div className="flex bg-white rounded-[14px] border border-gray-200 p-1">
-                            <button
-                                onClick={() => setViewMode("kanban")}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-medium transition-all ${
-                                    viewMode === "kanban" ? "bg-red-50 text-[#DB2727] shadow-sm font-bold" : "text-gray-500 hover:text-gray-700 cursor-pointer"
-                                }`}
-                            >
-                                <LayoutGrid size={16} />
-                                Kanban
-                            </button>
-                            <button
-                                onClick={() => setViewMode("table")}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-medium transition-all ${
-                                    viewMode === "table" ? "bg-[#DB2727] text-white shadow-sm font-bold" : "text-gray-500 hover:text-gray-700 cursor-pointer"
-                                }`}
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <line x1="8" y1="6" x2="21" y2="6"></line>
-                                    <line x1="8" y1="12" x2="21" y2="12"></line>
-                                    <line x1="8" y1="18" x2="21" y2="18"></line>
-                                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                                </svg>
-                                Table
-                            </button>
-                        </div>
+                        {user.role !== "Company" && (
+                            <div className="flex bg-white rounded-[14px] border border-gray-200 p-1">
+                                <button
+                                    onClick={() => setViewMode("kanban")}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-medium transition-all ${
+                                        viewMode === "kanban" ? "bg-red-50 text-[#DB2727] shadow-sm font-bold" : "text-gray-500 hover:text-gray-700 cursor-pointer"
+                                    }`}
+                                >
+                                    <LayoutGrid size={16} />
+                                    Kanban
+                                </button>
+                                <button
+                                    onClick={() => setViewMode("table")}
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-[10px] text-sm font-medium transition-all ${
+                                        viewMode === "table" ? "bg-[#DB2727] text-white shadow-sm font-bold" : "text-gray-500 hover:text-gray-700 cursor-pointer"
+                                    }`}
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                        <line x1="8" y1="6" x2="21" y2="6"></line>
+                                        <line x1="8" y1="12" x2="21" y2="12"></line>
+                                        <line x1="8" y1="18" x2="21" y2="18"></line>
+                                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                                    </svg>
+                                    Table
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     {isLoading ? (
