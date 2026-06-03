@@ -354,7 +354,7 @@ export default function TicketDetailsPage() {
             {/* Side navigation menu with chat link */}
             <SideMenu ticketId={ticketId} />
 
-            <main className="pt-30 px-16 ml-16 max-w-[1440px] mx-auto flex flex-col gap-6">
+            <main className="pt-30 px-16 ml-16 min-[1500px]:ml-auto max-w-[1440px] mx-auto flex flex-col gap-6">
 
                 {/* Header Panel */}
                 <Header title="Digitrust Ticketing System" />

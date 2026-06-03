@@ -53,7 +53,7 @@ export default function TicketChatPage() {
             {/* Left side menu — passes ticketId so the chat icon stays highlighted */}
             <SideMenu ticketId={ticketId} />
 
-            <main className="pt-28 px-16 ml-16 max-w-[1440px] mx-auto flex flex-col gap-6">
+            <main className="pt-28 px-16 ml-16 min-[1500px]:ml-auto max-w-[1440px] mx-auto flex flex-col gap-6">
 
                 {/* Back nav row */}
                 <div className="flex items-center justify-between">

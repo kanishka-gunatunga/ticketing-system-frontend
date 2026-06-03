@@ -381,7 +381,7 @@ export default function CreateLead() {
             <Header title="Digitrust Ticketing System" />
             <SideMenu />
 
-            <main className="pt-28 px-8 max-w-[1350px] mx-auto flex flex-col gap-6">
+            <main className="pt-28 px-16 ml-16 min-[1500px]:ml-auto max-w-[1350px] mx-auto flex flex-col gap-6">
 
                 {/* Back button */}
                 <div className="flex items-center">

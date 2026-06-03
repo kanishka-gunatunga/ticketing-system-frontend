@@ -257,7 +257,7 @@ export default function UserManagement() {
             <Header title="User Administration" />
             <SideMenu />
 
-            <main className="pt-30 px-16 ml-16 max-w-[1440px] mx-auto flex flex-col gap-6">
+            <main className="pt-30 px-16 ml-16 min-[1500px]:ml-auto max-w-[1440px] mx-auto flex flex-col gap-6">
                 <section className="bg-white rounded-[30px] p-8 shadow-sm flex flex-col">
                     <div className="w-full flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
                         <div>

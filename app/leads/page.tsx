@@ -298,7 +298,7 @@ export default function Leads() {
             <Header title="Digitrust Ticketing System" />
             <SideMenu />
 
-            <main className="pt-30 px-16 ml-16 max-w-[1440px] mx-auto flex flex-col gap-8">
+            <main className="pt-30 px-16 ml-16 min-[1500px]:ml-auto max-w-[1440px] mx-auto flex flex-col gap-8">
                 
                 {/* Controls Section (Search, Filters, Create Inquiry Button) */}
                 <div className="flex flex-col gap-4 py-4">
