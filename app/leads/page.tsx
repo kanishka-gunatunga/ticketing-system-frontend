@@ -361,7 +361,7 @@ export default function Leads() {
                                         <option value="Escalated">Escalated</option>
                                         <option value="Assigned L2">Assigned L2</option>
                                         <option value="Resolved">Resolved</option>
-                                        <option value="Closed">Closed</option>
+                                        {/*<option value="Closed">Closed</option>*/}
                                     </select>
                                 </div>
 
